@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Real-time Dashboard</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto; text-align: center; }
+        .value { font-size: 48px; font-weight: bold; color: #007bff; margin: 20px 0; }
+        .status { color: #666; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>ระบบมอนิเตอร์พารามิเตอร์ (Real-time)</h2>
+        <hr>
+        <div class="status">เวลาอัปเดตล่าสุด: <span id="time">-</span></div>
+        <div class="value"><span id="metric">0</span> %</div>
+        <div class="status" id="connection-status" style="color: orange;">กำลังเชื่อมต่อเซิร์ฟเวอร์...</div>
+    </div>
+
+    <script>
+        // สร้างการเชื่อมต่อไปยัง WebSocket Server (Application Layer)
+        const socket = new WebSocket('ws://localhost:8080');
+
+        const connectionStatus = document.getElementById('connection-status');
+        const metricDisplay = document.getElementById('metric');
+        const timeDisplay = document.getElementById('time');
+
+        // เมื่อเชื่อมต่อสำเร็จ
+        socket.onopen = () => {
+            connectionStatus.innerText = "สถานะ: เชื่อมต่อเรียลไทม์แล้ว";
+            connectionStatus.style.color = "green";
+        };
+
+        // เมื่อมีข้อมูล (Message) ถูก Push มาจาก Server
+        socket.onmessage = (event) => {
+            // แปลงข้อมูล JSON String กลับมาเป็น Object
+            const data = JSON.parse(event.data);
+            
+            if (data.type === "DATA") {
+                // อัปเดตข้อมูลบนหน้าจอทันทีโดยไม่ต้อง Refresh หน้าเว็บ!
+                metricDisplay.innerText = data.status_value;
+                timeDisplay.innerText = data.time;
+            }
+        };
+
+        // เมื่อเซิร์ฟเวอร์ปิดตัวลงหรือหลุดการเชื่อมต่อ
+        socket.onclose = () => {
+            connectionStatus.innerText = "สถานะ: การเชื่อมต่อขาดหาย!";
+            connectionStatus.style.color = "red";
+        };
+    </script>
+</body>
+</html>
