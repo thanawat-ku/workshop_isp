@@ -1,9 +1,7 @@
 # Advanced API Design: RESTful Standards & gRPC
-
-
-## gRPC
-- install
+## Python
 - pip install grpcio grpcio-tools
+- python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. telemetry.proto
 
-- compile proto
-- python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. showcase.proto
+## Node.js
+- npm install @grpc/grpc-js @grpc/proto-loader
