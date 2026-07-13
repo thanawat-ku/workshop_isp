@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package showcase;
+
+service EchoService {
+  // 1. Unary RPC: ส่ง 1 รับ 1
+  rpc UnaryEcho (EchoRequest) returns (EchoResponse) {}
+
+  // 2. Server Streaming RPC: Client ส่ง 1, Server ตอบกลับเป็นชุด (stream)
+  rpc ServerStreamingEcho (EchoRequest) returns (stream EchoResponse) {}
+
+  // 3. Client Streaming RPC: Client ส่งเป็นชุด (stream), Server ตอบ 1 รวบยอด
+  rpc ClientStreamingEcho (stream EchoRequest) returns (EchoResponse) {}
+
+  // 4. Bidirectional Streaming RPC: ต่างฝ่ายต่างส่งเป็นชุด (stream) หากัน
+  rpc BidirectionalStreamingEcho (stream EchoRequest) returns (stream EchoResponse) {}
+}
+
+message EchoRequest {
+  string message = 1;
+}
+
+message EchoResponse {
+  string message = 1;
+}
