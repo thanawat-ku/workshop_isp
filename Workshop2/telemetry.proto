@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package iot_telemetry;
+
+message TelemetryData {
+  string device_id = 1;
+  float voltage = 2;
+  int64 timestamp = 3;
+}
+
+message ResetRequest {
+  string device_id = 1;
+  string reason = 2;
+}
+
+message ResetResponse {
+  bool success = 1;
+}
+
+service DeviceService {
+  // 🌟 เปลี่ยนเป็น Bidirectional Stream: ส่ง Telemetry ขึ้นไป และรอรับคำสั่ง Reset กลับลงมา
+  rpc StreamTelemetry (stream TelemetryData) returns (stream ResetRequest);
+  
+  // 🌟 Pi 5 Monitor จะมายิงเรียกฟังก์ชันนี้ที่ Server หลักโดยตรง
+  rpc ResetDevice (ResetRequest) returns (ResetResponse);
+}
